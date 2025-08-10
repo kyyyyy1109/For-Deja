@@ -1,201 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Relationship Quiz & Apology</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questions for Deja</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #fefefe;
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  h1, h2 {
-    text-align: center;
-  }
-  .question {
-    margin-bottom: 1rem;
-  }
-  label {
-    display: block;
-    margin: 0.3rem 0;
-    cursor: pointer;
-  }
-  button {
-    background: #0066cc;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-  button:hover {
-    background: #004999;
-  }
-  .result {
-    background: #e0f0ff;
-    border: 1px solid #b0d4ff;
-    padding: 1rem;
-    margin-top: 1rem;
-    white-space: pre-wrap;
-  }
-  #forgive-buttons button {
-    background: #009933;
-    margin-right: 0.5rem;
-  }
-  #forgive-buttons button.no {
-    background: #cc3300;
-  }
-  #love-you {
-    margin-top: 2rem;
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #cc0033;
-    text-align: center;
-  }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
+    .chat {
+        max-width: 500px;
+        margin: auto;
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .message {
+        padding: 10px 15px;
+        border-radius: 20px;
+        margin: 10px 0;
+        max-width: 80%;
+        clear: both;
+    }
+    .question {
+        background-color: #ff4d4d;
+        color: white;
+        float: left;
+    }
+    .answer {
+        background-color: #e6e6e6;
+        float: right;
+    }
+    button {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 15px;
+        margin-top: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #e63939;
+    }
+    .center {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .whatsapp-btn {
+        background-color: #25D366;
+        font-size: 16px;
+    }
 </style>
 </head>
 <body>
 
-<h1>Our Relationship Quiz</h1>
-
-<div id="quiz-container"></div>
-
-<div id="result-container" style="display:none;">
-  <h2>Your Answers:</h2>
-  <div id="answers-display" class="result"></div>
-  <button id="copy-answers-btn">Copy Answers to Clipboard</button>
-  <button id="send-whatsapp-btn">Send Results on WhatsApp</button>
-  <div id="apology" style="margin-top:1rem;">
-    <p>Deja, I really do feel empty when we don't talk. I'm sorry for not reaching out sooner.</p>
-  </div>
-  <h3>Do you forgive me?</h3>
-  <div id="forgive-buttons">
-    <button id="yes-btn">Yes</button>
-    <button id="yes2-btn">Yes</button>
-    <button id="no-btn" class="no">No</button>
-  </div>
-</div>
-
-<div id="final-message" style="display:none;">
-  <p id="love-you">I love you, Deja. ❤️</p>
-</div>
+<div class="chat" id="chat"></div>
 
 <script>
-  const questions = [
-    {
-      question: "Do you feel upset when I don’t say good morning first?",
-      options: ["Yes, it hurts", "Sometimes, but I understand", "No, it’s okay"]
-    },
-    {
-      question: "How do you feel when I take a long time to reply?",
-      options: ["Frustrated", "Neutral", "I get it, no problem"]
-    },
-    {
-      question: "Do you feel ignored when I don’t text you for a while?",
-      options: ["Yes, it makes me sad", "Sometimes, but I keep busy", "No, I’m okay with it"]
-    },
-    {
-      question: "Are you happy with how we communicate?",
-      options: ["Not really, we need to improve", "It’s okay, but can get better", "Yes, I’m happy"]
-    },
-    {
-      question: "Do you think I should reach out first more often?",
-      options: ["Definitely", "Sometimes", "No, it’s fine the way it is"]
-    },
-    {
-      question: "What do you want me to do to make things better?",
-      options: ["Talk more", "Listen more", "Give me space sometimes"]
+const questions = [
+    "Do you still love me?",
+    "Do you miss me when we don't talk?",
+    "Do you think about me often?",
+    "Do you believe we can work things out?",
+    "Do I make you happy?",
+    "Do you forgive me?"
+];
+
+let answers = [];
+let currentQuestion = 0;
+const chat = document.getElementById("chat");
+
+function addMessage(text, className) {
+    const msg = document.createElement("div");
+    msg.className = "message " + className;
+    msg.innerText = text;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function askQuestion() {
+    if (currentQuestion < questions.length) {
+        addMessage(questions[currentQuestion], "question");
+        ["Yes", "No", "Maybe"].forEach(option => {
+            const btn = document.createElement("button");
+            btn.innerText = option;
+            btn.onclick = () => {
+                answers.push(`${questions[currentQuestion]}: ${option}`);
+                addMessage(option, "answer");
+                currentQuestion++;
+                askQuestion();
+            };
+            chat.appendChild(btn);
+        });
+    } else {
+        forgivenessStep();
     }
-  ];
+}
 
-  const quizContainer = document.getElementById("quiz-container");
-  const resultContainer = document.getElementById("result-container");
-  const answersDisplay = document.getElementById("answers-display");
-  const copyAnswersBtn = document.getElementById("copy-answers-btn");
-  const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
-  const finalMessage = document.getElementById("final-message");
-  const forgiveButtonsDiv = document.getElementById("forgive-buttons");
-
-  let currentQuestionIndex = 0;
-  let selectedAnswers = [];
-
-  function showQuestion() {
-    if(currentQuestionIndex >= questions.length) {
-      showResults();
-      return;
-    }
-    const q = questions[currentQuestionIndex];
-    let html = `<div class="question"><h2>Question ${currentQuestionIndex + 1} of ${questions.length}</h2>`;
-    html += `<p>${q.question}</p>`;
-    q.options.forEach((option, i) => {
-      html += `<label><input type="radio" name="q${currentQuestionIndex}" value="${option}"> ${option}</label>`;
+function forgivenessStep() {
+    addMessage("Will you forgive me?", "question");
+    ["Yes, I forgive you ❤️", "No, I need more time 💔"].forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => {
+            answers.push(`Forgiveness: ${option}`);
+            addMessage(option, "answer");
+            finalMessage();
+        };
+        chat.appendChild(btn);
     });
-    html += `<button onclick="submitAnswer()">Next</button></div>`;
-    quizContainer.innerHTML = html;
-  }
+}
 
-  function submitAnswer() {
-    const options = document.getElementsByName("q" + currentQuestionIndex);
-    let selected = null;
-    for (const opt of options) {
-      if(opt.checked) {
-        selected = opt.value;
-        break;
-      }
-    }
-    if(!selected) {
-      alert("Please select an answer to proceed.");
-      return;
-    }
-    selectedAnswers[currentQuestionIndex] = selected;
-    currentQuestionIndex++;
-    showQuestion();
-  }
+function finalMessage() {
+    addMessage("I'm sorry for not reaching out sooner. I love you, Deja. I really do love you.", "question");
 
-  function showResults() {
-    quizContainer.style.display = "none";
-    resultContainer.style.display = "block";
-    // Show answers
-    let answersText = "";
-    questions.forEach((q, i) => {
-      answersText += `${q.question}\nAnswer: ${selectedAnswers[i]}\n\n`;
-    });
-    answersDisplay.textContent = answersText;
-  }
+    const btn = document.createElement("button");
+    btn.innerText = "📩 Send Answers on WhatsApp";
+    btn.classList.add("whatsapp-btn");
+    btn.onclick = () => {
+        const message = encodeURIComponent("Here are my answers:\n\n" + answers.join("\n"));
+        window.open(`https://wa.me/?text=${message}`, "_blank");
+    };
+    const centerDiv = document.createElement("div");
+    centerDiv.classList.add("center");
+    centerDiv.appendChild(btn);
+    chat.appendChild(centerDiv);
+}
 
-  copyAnswersBtn.addEventListener("click", () => {
-    navigator.clipboard.writeText(answersDisplay.textContent)
-      .then(() => {
-        alert("Answers copied to clipboard! Please send them to me.");
-      })
-      .catch(() => {
-        alert("Failed to copy answers. Please try manually.");
-      });
-  });
-
-  sendWhatsappBtn.addEventListener("click", () => {
-    const phoneNumber = "YOUR_PHONE_NUMBER_WITH_COUNTRY_CODE"; // e.g. "1234567890" without + or 00
-    const message = encodeURIComponent(answersDisplay.textContent + "\n\nDeja, I really do feel empty when we don't talk. I'm sorry for not reaching out sooner.");
-    // Open WhatsApp URL
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappUrl, '_blank');
-  });
-
-  forgiveButtonsDiv.addEventListener("click", (e) => {
-    if(e.target.tagName === "BUTTON") {
-      resultContainer.style.display = "none";
-      finalMessage.style.display = "block";
-    }
-  });
-
-  // Start quiz
-  showQuestion();
+askQuestion();
 </script>
 
 </body>
