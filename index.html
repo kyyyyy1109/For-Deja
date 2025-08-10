@@ -103,7 +103,7 @@ function askQuestion() {
 
 function forgivenessStep() {
     addMessage("Will you forgive me?", "question");
-    ["Yes, I forgive you ❤️", "No, I need more time 💔"].forEach(option => {
+    ["Yes, I forgive you ❤️", "Yes, No 💔"].forEach(option => {
         const btn = document.createElement("button");
         btn.innerText = option;
         btn.onclick = () => {
