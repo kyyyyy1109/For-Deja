@@ -1,137 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Questions for Deja</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>For Deja</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        padding: 20px;
-    }
-    .chat {
-        max-width: 500px;
-        margin: auto;
-        background: white;
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .message {
-        padding: 10px 15px;
-        border-radius: 20px;
-        margin: 10px 0;
-        max-width: 80%;
-        clear: both;
-    }
-    .question {
-        background-color: #ff4d4d;
-        color: white;
-        float: left;
-    }
-    .answer {
-        background-color: #e6e6e6;
-        float: right;
-    }
-    button {
-        background-color: #ff4d4d;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 15px;
-        margin-top: 5px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #e63939;
-    }
-    .center {
-        text-align: center;
-        margin-top: 20px;
-    }
-    .whatsapp-btn {
-        background-color: #25D366;
-        font-size: 16px;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 480px;
+    margin: 20px auto;
+    padding: 10px;
+    background: #fff0f6;
+    color: #333;
+    text-align: center;
+  }
+  h1 {
+    color: #c94f5d;
+  }
+  .quiz-question {
+    margin: 20px 0;
+  }
+  button {
+    background-color: #c94f5d;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  button.small-no {
+    background-color: #999;
+    font-size: 12px;
+    margin-top: 15px;
+  }
+  #send-results-btn {
+    background-color: #4CAF50;
+    margin-top: 25px;
+    display: none;
+  }
+  .hidden {
+    display: none;
+  }
+  #apology {
+    margin-top: 30px;
+  }
+  #summary {
+    background: #fee;
+    border: 1px solid #c94f5d;
+    padding: 10px;
+    margin-top: 20px;
+    text-align: left;
+  }
 </style>
 </head>
 <body>
 
-<div class="chat" id="chat"></div>
+<h1>Quiz About Us ❤️</h1>
+
+<div id="quiz-container">
+
+  <div class="quiz-question" id="question-1">
+    <p>Do you feel upset when I don’t say good morning first?</p>
+    <button onclick="selectAnswer(1, 'Sometimes')">Sometimes</button>
+    <button onclick="selectAnswer(1, 'Not really')">Not really</button>
+  </div>
+
+  <div class="quiz-question hidden" id="question-2">
+    <p>How do you feel when I take a long time to reply to your messages?</p>
+    <button onclick="selectAnswer(2, 'I feel worried or ignored')">I feel worried or ignored</button>
+    <button onclick="selectAnswer(2, 'I understand and wait')">I understand and wait</button>
+  </div>
+
+  <div class="quiz-question hidden" id="question-3">
+    <p>When we don’t talk for a while, does it make you feel empty or distant?</p>
+    <button onclick="selectAnswer(3, 'Yes, I miss our talks')">Yes, I miss our talks</button>
+    <button onclick="selectAnswer(3, 'No, I’m okay with space')">No, I’m okay with space</button>
+  </div>
+
+  <div class="quiz-question hidden" id="question-4">
+    <p>Do you think I care about us even if I don’t always show it in messages?</p>
+    <button onclick="selectAnswer(4, 'Yes, I believe you do')">Yes, I believe you do</button>
+    <button onclick="selectAnswer(4, 'I’m not sure sometimes')">I’m not sure sometimes</button>
+  </div>
+
+  <div class="quiz-question hidden" id="question-5">
+    <p>Would you like us to try and communicate more openly, even if it feels awkward?</p>
+    <button onclick="selectAnswer(5, 'Yes, I want that')">Yes, I want that</button>
+    <button onclick="selectAnswer(5, 'No, I’m okay for now')">No, I’m okay for now</button>
+  </div>
+
+  <div class="quiz-question hidden" id="question-6">
+    <p>When I stay quiet or don’t reach out first, how does that affect how you feel about us?</p>
+    <button onclick="selectAnswer(6, 'It makes me feel unsure or distant')">It makes me feel unsure or distant</button>
+    <button onclick="selectAnswer(6, 'I understand you need space sometimes')">I understand you need space sometimes</button>
+  </div>
+
+</div>
+
+<div id="summary" class="hidden">
+  <h2>Your Answers:</h2>
+  <ul id="answers-list"></ul>
+  <button onclick="showApology()">Continue</button>
+</div>
+
+<div id="apology" class="hidden">
+  <p>Hey, I just want to say I’m sorry for the silence and awkwardness. It really does feel empty when we don’t talk. I hope we can find our way back to better conversations.</p>
+  
+  <p>Do you forgive me?</p>
+  <button onclick="forgive(true)">Yes</button>
+  <button onclick="forgive(true)">Yes</button>
+  <br />
+  <button class="small-no" onclick="forgive(false)">No</button>
+
+  <button id="send-results-btn" onclick="sendResultsWhatsApp()">Send Results</button>
+</div>
 
 <script>
-const questions = [
-    "Do you still love me?",
-    "Do you miss me when we don't talk?",
-    "Do you think about me often?",
-    "Do you believe we can work things out?",
-    "Do I make you happy?",
-    "Do you forgive me?"
-];
+  const answers = {};
 
-let answers = [];
-let currentQuestion = 0;
-const chat = document.getElementById("chat");
-
-function addMessage(text, className) {
-    const msg = document.createElement("div");
-    msg.className = "message " + className;
-    msg.innerText = text;
-    chat.appendChild(msg);
-    chat.scrollTop = chat.scrollHeight;
-}
-
-function askQuestion() {
-    if (currentQuestion < questions.length) {
-        addMessage(questions[currentQuestion], "question");
-        ["Yes", "No", "Maybe"].forEach(option => {
-            const btn = document.createElement("button");
-            btn.innerText = option;
-            btn.onclick = () => {
-                answers.push(`${questions[currentQuestion]}: ${option}`);
-                addMessage(option, "answer");
-                currentQuestion++;
-                askQuestion();
-            };
-            chat.appendChild(btn);
-        });
+  function selectAnswer(questionNum, answerText) {
+    answers[questionNum] = answerText;
+    document.getElementById('question-' + questionNum).classList.add('hidden');
+    const nextNum = questionNum + 1;
+    if(document.getElementById('question-' + nextNum)) {
+      document.getElementById('question-' + nextNum).classList.remove('hidden');
     } else {
-        forgivenessStep();
+      showSummary();
     }
-}
+  }
 
-function forgivenessStep() {
-    addMessage("Will you forgive me?", "question");
-    ["Yes, I forgive you ❤️", "Yes, No 💔"].forEach(option => {
-        const btn = document.createElement("button");
-        btn.innerText = option;
-        btn.onclick = () => {
-            answers.push(`Forgiveness: ${option}`);
-            addMessage(option, "answer");
-            finalMessage();
-        };
-        chat.appendChild(btn);
-    });
-}
+  function showSummary() {
+    document.getElementById('quiz-container').classList.add('hidden');
+    const list = document.getElementById('answers-list');
+    list.innerHTML = '';
+    for(let i=1; i<=6; i++) {
+      const li = document.createElement('li');
+      li.textContent = `Q${i}: ${answers[i]}`;
+      list.appendChild(li);
+    }
+    document.getElementById('summary').classList.remove('hidden');
+  }
 
-function finalMessage() {
-    addMessage("I'm sorry for not reaching out sooner. I love you, Deja. I really do love you.", "question");
+  function showApology() {
+    document.getElementById('summary').classList.add('hidden');
+    document.getElementById('apology').classList.remove('hidden');
+    // Show the Send Results button when apology is shown
+    document.getElementById('send-results-btn').style.display = 'inline-block';
+  }
 
-    const btn = document.createElement("button");
-    btn.innerText = "📩 Send Answers on WhatsApp";
-    btn.classList.add("whatsapp-btn");
-    btn.onclick = () => {
-        const message = encodeURIComponent("Here are my answers:\n\n" + answers.join("\n"));
-        window.open(`https://wa.me/?text=${message}`, "_blank");
-    };
-    const centerDiv = document.createElement("div");
-    centerDiv.classList.add("center");
-    centerDiv.appendChild(btn);
-    chat.appendChild(centerDiv);
-}
+  function forgive(isForgiven) {
+    if(!isForgiven) {
+      alert("I understand and I will leave you alone.");
+    }
+    document.body.innerHTML = '<h1>I love you no matter what, and I really do love you Deja.<br> I\'m sorry for not reaching out sooner.</h1>';
+  }
 
-askQuestion();
+  function sendResultsWhatsApp() {
+    let message = "Hey Deja, here are your answers to the quiz:\n\n";
+    for(let i=1; i<=6; i++) {
+      message += `Q${i}: ${answers[i]}\n`;
+    }
+    message += "\nI love you no matter what ❤️";
+    // Encode message for URL
+    const encodedMessage = encodeURIComponent(message);
+    // WhatsApp API URL for sending message (opens WhatsApp chat)
+    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  }
 </script>
 
 </body>
